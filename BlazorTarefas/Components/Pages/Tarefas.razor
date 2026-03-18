@@ -1,0 +1,109 @@
+@page "/tarefas"
+@page "/tarefas/{status}"
+@page "/lista"
+
+@using BlazorTarefas.Shared.Data
+@rendermode InteractiveServer
+
+<h1>Lista de Tarefas</h1>
+<h5>
+    Usando <b>rendermode InteractiveServer</b>
+</h5>
+<br />
+
+
+
+
+<button class="btn btn-link mb-3" @onclick="IrParaResumo">
+    <i class="bi bi-bar-chart-line"></i>
+    Ver resumo
+</button>
+
+
+
+@if (tarefas == null)
+{
+    <img src="https://media.giphy.com/media/qHOf8vC1ppFQs/giphy.gif" width="100" class="icone-carregando" />
+    <p>Carregando tarefas...</p>
+}
+else if (!tarefas.Any())
+{
+    <img src="icons/erro-404.png" class="icone-carregando" />
+    <p>Ainda não existem tarefas...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Ação</th>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Concluída</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in tarefas)
+        {
+            <tr>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => RemoverTarefa(item.Id)"><i class="bi bi-trash"></i> Remover</button>
+                </td>
+                <td>@item.DataCriacao.ToShortDateString()</td>
+                <td>@item.Descricao</td>
+                <td>
+                    <input type="checkbox" checked="@item.Concluida" @onchange="() => AlternarConclusao(item.Id)" />
+                </td>
+            </tr>
+        }
+        </tbody>
+
+    </table>
+}
+
+
+
+@code {
+    private List<Tarefa>? tarefas;
+    private List<Tarefa>? todas;
+
+    [Parameter]
+    public string? Status { get; set; }
+
+
+    [Inject]
+    private NavigationManager Nav { get; set; } = default!;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(2000);
+        todas = TarefaDados.ObterTarefas();
+
+        tarefas = Status?.ToLower() switch
+        {
+            "concluidas" => todas.Where(t => t.Concluida).ToList(),
+            "pendentes" => todas.Where(t => !t.Concluida).ToList(),
+            _ => todas
+        };
+    }
+    private void RemoverTarefa(Guid id)
+    {
+        tarefas?.RemoveAll(t => t.Id == id);
+    }
+    private void AlternarConclusao(Guid id)
+    {
+        var tarefa = tarefas?.FirstOrDefault(t => t.Id == id);
+
+        if (tarefa != null)
+            tarefa.Concluida = !tarefa.Concluida;
+    }
+    
+    private void IrParaResumo()
+    {
+        Nav.NavigateTo("/tarefas-resumo");
+    }
+
+
+}
