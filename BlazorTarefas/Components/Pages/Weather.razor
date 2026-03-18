@@ -3,46 +3,72 @@
 
 <PageTitle>Weather</PageTitle>
 
+<!-- INÍCIO DA SEÇÃO DE DIAGNÓSTICO -->
+<div class="alert alert-primary mt-4 p-3" style="border-left: 5px solid #0d6e">
+    <h5 class="alert-heading fw-bold">Diagnóstico de Renderização</h5>
+    <hr>
+    <dl class="row">
+        <dt class="col-sm-4">Local de Execução:</dt>
+        <dd class="col-sm-8"><code>@RendererInfo.Name</code></dd>
+
+        <dt class="col-sm-4">É Interativo (agora):</dt>
+        <dd class="col-sm-8"><code>@RendererInfo.IsInteractive</code></dd>
+
+        <dt class="col-sm-4">Modo Atribuído:</dt>
+        <dd class="col-sm-8"><code>@(AssignedRenderMode?.ToString() ?? "Nenhum (Estático/SSR)")</code></dd>
+    </dl>
+</div>
+<!-- FIM DA SEÇÃO -->
+
+<button disabled="@(!InteratividadeDisponivel)">Atualizar</button>
+
+@if (!InteratividadeDisponivel)
+{
+    <p style="color:red;">Interatividade ainda não disponível.</p>
+}
+
 <h1>Weather</h1>
+
 <h5>
     Usando <b>attribute [StreamRendering]</b>
 </h5>
-
-
+<br />
+<h1>Weather</h1>
+<br />
+<p>This component demonstrates showing data.</p>
 
 @if (forecasts == null)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    <p><em>Loading...</em></p>
 }
 else
 {
     <table class="table">
         <thead>
-        <tr>
-            <th>Date</th>
-            <th aria-label="Temperature in Celsius">Temp. (C)</th>
-            <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
+            <tr>
+                <th>Date</th>
+                <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                <th aria-label="Temperature in Farenheit">Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var forecast in forecasts)
-        {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
-        }
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
         </tbody>
     </table>
 }
 
 @code {
     private WeatherForecast[]? forecasts;
+    private bool InteratividadeDisponivel => RendererInfo?.IsInteractive == true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,5 +92,4 @@ else
         public string? Summary { get; set; }
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
-
 }
