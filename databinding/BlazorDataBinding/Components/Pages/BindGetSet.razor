@@ -1,0 +1,22 @@
+@page "/bind-get-set"
+@rendermode InteractiveServer
+
+<h4>Usando <code>@("bind:get")</code> e <code>@("bind:set")</code></h4>
+<h5>Usa o event onchage por padrão (ao perde o foco)</h5>
+<h3>BindGetSet</h3>
+
+<input @bind:get="texto"
+       @bind:set="AtualizarTexto"/>
+       
+
+@code {
+       private string? texto= "Inicial";
+
+       private void AtualizarTexto(string? valor)
+       {
+              texto = string.IsNullOrEmpty(valor)
+                     ? "Valor invalido"
+                     : valor.Trim().ToUpper();
+       }
+       
+}

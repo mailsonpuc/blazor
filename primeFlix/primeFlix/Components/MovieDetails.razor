@@ -1,0 +1,69 @@
+@using System
+@using primeFlix.Services
+
+<div class="col-md-8">
+    <h1>@MovieDetail?.Title</h1>
+    
+    <div class="mb-3">
+        <span class="badge bg-warning text-dark me-2">⭐ @MovieDetail?.VoteAverage.ToString("F1")/10</span>
+        <span class="badge bg-info text-dark">📅 @MovieDetail?.ReleaseDate</span>
+    </div>
+
+    @if (MovieDetail?.Genres != null && MovieDetail.Genres.Count > 0)
+    {
+        <div class="mb-3">
+            <strong>Gêneros:</strong>
+            @foreach (var genre in MovieDetail.Genres)
+            {
+                <span class="badge bg-secondary me-2">@genre.Name</span>
+            }
+        </div>
+    }
+
+    @if (MovieDetail?.Runtime > 0)
+    {
+        <div class="mb-3">
+            <strong>Duração:</strong> @MovieDetail.Runtime minutos
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(MovieDetail?.Status))
+    {
+        <div class="mb-3">
+            <strong>Status:</strong> @MovieDetail.Status
+        </div>
+    }
+
+    <div class="mb-3">
+        <strong>Popularidade:</strong> @MovieDetail?.Popularity.ToString("F0")
+    </div>
+
+    <div class="mb-3">
+        <h5>Sinopse</h5>
+        <p>@MovieDetail?.Overview</p>
+    </div>
+
+    <button class="btn btn-primary" @onclick="OnGoHome">
+        ← Voltar para Home
+    </button>
+
+     <button class="btn btn-primary">
+        Salvar
+    </button>
+
+     <button class="btn btn-danger" >
+        <a href="@($"https://www.youtube.com/results?search_query={Uri.EscapeDataString(MovieDetail?.Title ?? "")} trailer")" class="text-white text-decoration-none" target="_blank">
+            Trailer
+        </a>
+    </button>
+
+
+</div>
+
+@code {
+    [Parameter]
+    public MovieDetail? MovieDetail { get; set; }
+
+    [Parameter]
+    public EventCallback OnGoHome { get; set; }
+}

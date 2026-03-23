@@ -1,0 +1,20 @@
+[
+  {
+    "Id": "e3b0c442-98fc-1c14-9af1-93b2e8a1cf0b",
+    "descricao": "Primeira tarefa",
+    "concluida": false,
+    "datacriacao": "2029-08-11"
+  },
+  {
+    "Id": "6f1a3e50-4d98-4b3d-b3ad-930274e902a1",
+    "descricao": "Segunda tarefa",
+    "concluida": true,
+    "datacriacao": "2029-08-11"
+  },
+  {
+    "Id": "9a4f7d2e-4bba-4f34-b8f2-2c7fabcde123",
+    "descricao": "Terceira tarefa",
+    "concluida": false,
+    "datacriacao": "2029-08-11"
+  }
+]

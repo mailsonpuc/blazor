@@ -1,0 +1,120 @@
+﻿@page "/"
+@using primeFlix.Services
+@inject MovieService MovieService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+
+
+
+<PageTitle>Home</PageTitle>
+<Header />
+
+<div class="container mt-5">
+    <h1>Filmes em Cartaz</h1>
+
+    <div class="alert alert-info mb-3">
+        <strong>Status:</strong> @statusMessage
+    </div>
+
+    @if (isLoading)
+    {
+        <p><em>Carregando filmes...</em></p>
+    }
+    else if (movies == null || movies.Count == 0)
+    {
+        <p>Nenhum filme encontrado.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var movie in movies)
+            {
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 cursor-pointer" @onclick="() => GoToMovieDetails(movie.Id)">
+                        @if (!string.IsNullOrEmpty(movie.PosterPath))
+                        {
+                            <img src="https://image.tmdb.org/t/p/w500@(movie.PosterPath)" 
+                                 class="card-img-top" alt="@movie.Title" style="height: 300px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                 style="height: 300px;">
+                                <span class="text-white">Sem imagem</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@movie.Title</h5>
+                            <p class="card-text text-muted">@movie.ReleaseDate</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-warning text-dark">⭐ @movie.VoteAverage.ToString("F1")</span>
+                                <small class="text-muted">Popularidade: @movie.Popularity.ToString("F0")</small>
+                            </div>
+                            <p class="card-text small mt-3">@(movie.Overview.Length > 100 ? movie.Overview.Substring(0, 100) + "..." : movie.Overview)</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Movie> movies = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+    private string statusMessage = "Inicializando...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovies();
+    }
+
+    private async Task LoadMovies()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            statusMessage = "Aguardando resposta da API...";
+            
+            var response = await MovieService.GetNowPlayingMovies();
+            
+            statusMessage = $"Resposta recebida. Response null: {response == null}";
+            
+            if (response != null && response.Results != null)
+            {
+                movies = response.Results;
+                statusMessage = $" {movies.Count} filmes listado!";
+            }
+            else
+            {
+                statusMessage = "Resposta vazia da API";
+                errorMessage = "Não foi possível carregar os filmes. Tente novamente mais tarde.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Erro: {ex.GetType().Name}";
+            errorMessage = $"Erro ao carregar filmes: {ex.Message}\n{ex.InnerException?.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToMovieDetails(int movieId)
+    {
+        Navigation.NavigateTo($"/filme/{movieId}");
+    }
+}

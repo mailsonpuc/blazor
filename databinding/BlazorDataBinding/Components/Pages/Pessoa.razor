@@ -1,0 +1,26 @@
+@page "/pessoa"
+@rendermode InteractiveServer
+
+
+<h3>Pessoa</h3>
+
+<input @bind="nome" placeholder="Digite seu nome..." />
+
+<button @onclick="ExibirNome">Mostrar Nome</button>
+
+@if (!string.IsNullOrEmpty(nomeExibido))
+{
+    <p>O nome é: <strong>@nomeExibido</strong></p>
+}
+
+
+@code {
+    private string nome = "";
+    private string nomeExibido = "";
+
+    private void ExibirNome()
+    {
+        // Transferimos o valor apenas no momento do clique
+        nomeExibido = nome;
+    }
+}

@@ -1,0 +1,76 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h3>Conselho do dia</h3>
+
+
+@if (isLoading)
+{
+    <p>Carregando...</p>
+}
+
+
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <p class="text-danger">Erro: @errorMessage</p>
+}
+
+
+else if (!string.IsNullOrWhiteSpace(advice))
+{
+    <blockquote>@advice</blockquote>
+}
+
+
+else
+{
+    <p>Não foi possível obter um conselho.</p>
+}
+
+
+
+@code {
+    private bool isLoading = true;
+    private string? advice;
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var response = await client.GetFromJsonAsync<Frase>("https://api.adviceslip.com/advice");
+            advice = response?.Slip?.Advice;
+        }
+
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+
+    private class Frase
+    {
+        public Slip? Slip { get; set; }
+    }
+
+
+    private class Slip
+    {
+        public int Id { get; set; }
+        public string? Advice { get; set; }
+    }
+}
+
+

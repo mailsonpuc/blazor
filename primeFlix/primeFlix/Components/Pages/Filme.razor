@@ -1,0 +1,98 @@
+@page "/filme/{Id:int}"
+@using primeFlix.Services
+@inject MovieService MovieService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>@(movieDetail?.Title ?? "Detalhes do Filme")</PageTitle>
+
+<div class="container mt-5">
+    @if (isLoading)
+    {
+        <p><em>Carregando detalhes do filme...</em></p>
+    }
+    else if (movieDetail == null)
+    {
+        <div class="alert alert-warning">
+            <h4>Filme não encontrado</h4>
+            <p>Não foi possível carregar os detalhes do filme com ID: <strong>@Id</strong></p>
+            <button class="btn btn-primary" @onclick="GoHome">Voltar para Home</button>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-4">
+                @if (!string.IsNullOrEmpty(movieDetail.PosterPath))
+                {
+                    <img src="https://image.tmdb.org/t/p/w500@(movieDetail.PosterPath)" 
+                         class="img-fluid rounded" alt="@movieDetail.Title">
+                }
+                else
+                {
+                    <div class="bg-secondary d-flex align-items-center justify-content-center rounded" 
+                         style="height: 500px;">
+                        <span class="text-white">Sem imagem disponível</span>
+                    </div>
+                }
+            </div>
+            <MovieDetails MovieDetail="movieDetail" OnGoHome="GoHome" />
+        </div>
+    }
+
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private MovieDetail? movieDetail;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovieDetails();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadMovieDetails();
+    }
+
+    private async Task LoadMovieDetails()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            
+            movieDetail = await MovieService.GetMovieDetails(Id);
+            
+            if (movieDetail == null)
+            {
+                errorMessage = "Não foi possível carregar os detalhes do filme.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar filme: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
