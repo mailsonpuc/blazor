@@ -1,0 +1,13 @@
+@page "/bind-format-date"
+@rendermode InteractiveServer
+
+<h3>Exemplo de formatação de data com <code>InputDate</code></h3>
+
+<label for="dataNascimento">Data de nascimento</label>
+<InputDate id="dataNascimento" class="form-control" @bind-Value="dataNascimento" />
+<p>Data de nascimento: @dataNascimento.ToString("dd/MM/yyyy")</p>
+
+@code {
+    private DateTime dataNascimento = new DateTime(1990, 1, 1);
+}
+/

@@ -1,0 +1,29 @@
+@page "/bindevent"
+@rendermode InteractiveServer
+
+<h3>Exemplo com <code>@("bind:event")</code></h3>
+
+<h3>Usando bind padrão (usa onchange)</h3>
+
+<p>Digite algo</p>
+
+<input @bind="texto1" />
+<p>Valor atual: @texto1</p>
+
+<hr />
+
+
+
+<h3>Usando bind:event="oninput"</h3>
+<p>Digite algo</p>
+<input @bind="texto2" @bind:event="oninput" />
+<p>Valor: @texto2</p>
+
+
+
+@code {
+    private string texto1 = string.Empty;
+    private string texto2 = string.Empty;
+
+
+}
