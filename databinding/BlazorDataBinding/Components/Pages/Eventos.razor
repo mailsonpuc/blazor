@@ -1,0 +1,52 @@
+@page "/eventos-demo"
+@rendermode InteractiveServer
+
+
+
+<h3>Demonstraçao de Eventos</h3>
+
+
+<button class="btn btn-primary" @onclick="HandlerClick">Clique aqui</button>
+
+<p>MENSAGEM; <strong>@mensagem</strong></p>
+
+<hr />
+<h3>Usando lambda</h3>
+
+<button class="btn btn-success" @onclick="@(() => mensagemLambda = "Botão verde clicado!")">
+    Clique aqui
+</button>
+
+<p>MENSAGEM LAMBDA; <strong>@mensagemLambda</strong></p>
+
+
+
+
+<hr />
+
+<h4>Acessando MouseEventArgs</h4>
+<div class="alert alert-info" @onclick="HandleDivClick">
+    Clique em qualquer lugar desta caixa para acessar os dados do evento de clique.
+</div>
+<p>@mensagemCoordenadas</p>
+
+
+@code {
+    private string mensagem = "Aguardando um clique ...!";
+    private string mensagemLambda = "Aguardando Lambda ...!";
+    private string mensagemCoordenadas = "Aguardando coordenadas ...!";
+
+
+    private void HandlerClick(MouseEventArgs e)
+    {
+        mensagem = $"O botão foi clicado a s {DateTime.Now.ToLongTimeString()}";
+        Console.WriteLine("O metodo HanldeClick foi executado");
+    }
+
+
+    private void HandleDivClick(MouseEventArgs e)
+    {
+        mensagemCoordenadas = $"Coordenadas do clique: X={e.ClientX}, Y={e.ClientY}";
+    }
+
+}
